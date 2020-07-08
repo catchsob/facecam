@@ -158,8 +158,12 @@ if __name__ == '__main__':
     faces = Faces(args.encoding)
     if args.path is not None:
         if path.isfile(args.path):
-            c = faces.update(args.path)
-            print(f'{c} face updated in {args.encoding} for {time()-start:.3f} secs')
+            if args.rebuild:
+                c = faces.generate(args.path)
+                print(f'{c} face generated in {args.encoding} for {time()-start:.3f} secs')
+            else:
+                c = faces.update(args.path)
+                print(f'{c} face updated in {args.encoding} for {time()-start:.3f} secs')
         elif path.isdir(args.path):
             if args.rebuild:
                 c = faces.generate(args.path)
