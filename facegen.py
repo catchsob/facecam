@@ -23,6 +23,8 @@ class Faces():
 #         self.encodes = pd.eval(face_df['enc'])
     
     def _load(self):
+        if not path.isfile(self.facecsv):
+            return 0
         with open(self.facecsv, 'r', newline='', encoding='utf-8') as csvfile:
             rows = csv.reader(csvfile)
             self.labels = []
