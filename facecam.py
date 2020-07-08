@@ -151,7 +151,7 @@ if __name__ == '__main__':
     
     font = args.font
     if font is None: # decide the default font for varient platforms
-        font = 'uming.ttc' if platform.machine() == 'aarch64' else 'kaiu.ttf' # Jetson Nano vs Windows
+        font = 'NotoSansCJK-Regular.ttc' if platform.machine() == 'aarch64' else 'kaiu.ttf' # Jetson Nano vs Windows
     if not path.isfile(args.encoding):
         print(f'{args.encoding} not existed!')
     elif args.pic is None:
