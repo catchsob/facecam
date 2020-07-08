@@ -24,7 +24,7 @@ class Faces():
     
     def _load(self):
         if not path.isfile(self.facecsv):
-            return 0
+            return -1
         with open(self.facecsv, 'r', newline='', encoding='utf-8') as csvfile:
             rows = csv.reader(csvfile)
             self.labels = []
@@ -34,7 +34,7 @@ class Faces():
                     continue
                 self.labels.append(r[0])
                 self.encodes.append(eval(r[1]))
-        return len(self.labels)
+        return 0 if not self.labels else len(self.labels)
         
 #     def _save_legacy(self):
 #         if self.labels is None or self.encodes is None or self.facecsv is None:
@@ -60,7 +60,7 @@ class Faces():
         return list(enc), lab
     
     def delete(self, label):
-        if self._load() == 0:
+        if self._load() <= 0:
             return 0
                 
         for i, v in enumerate(self.labels):
@@ -73,7 +73,9 @@ class Faces():
     
     def update(self, p):
         if path.isfile(p): #更新單個檔
-            self._load()
+            if self._load() < 0:
+                return self.generate(p)
+            
             enc, lab = self._encode(p)
             for i, v in enumerate(self.labels):
                 if lab == v: #更新一筆
@@ -85,9 +87,10 @@ class Faces():
             return int(self._save())
         
         elif path.isdir(p): #path, 更新目錄下所有檔
-            self._load()
+            if self._load() < 0:
+                return self.generate(p)
+            
             samples = glob(path.join(p, '*.jpg')) # 準備檔案清單
-        
             count = 0
             for s in samples:
                 enc, lab = self._encode(s)
@@ -109,7 +112,12 @@ class Faces():
         return 0
         
     def generate(self, p):
-        samples = glob(path.join(p, '*.jpg')) # 準備檔案清單
+        if path.isfile(p):
+            samples = [p]
+        elif path.isdir(p):
+            samples = glob(path.join(p, '*.jpg')) # 準備檔案清單
+        else:
+            return 0
         
         # 創建模型
         self.labels = []
