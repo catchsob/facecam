@@ -7,7 +7,6 @@
 import face_recognition
 from glob import glob
 from os import path
-#import pandas as pd
 import csv
 
 class Faces():
@@ -16,11 +15,6 @@ class Faces():
         self.labels = None
         self.encodes = None
         self._load()
-    
-#     def _load_legacy(self):
-#         face_df = pd.read_csv(self.facecsv)
-#         self.labels = face_df['name'].values.tolist()
-#         self.encodes = pd.eval(face_df['enc'])
     
     def _load(self):
         if not path.isfile(self.facecsv):
@@ -35,13 +29,6 @@ class Faces():
                 self.labels.append(r[0])
                 self.encodes.append(eval(r[1]))
         return 0 if not self.labels else len(self.labels)
-        
-#     def _save_legacy(self):
-#         if self.labels is None or self.encodes is None or self.facecsv is None:
-#             return False
-#         df = pd.DataFrame({'name': self.labels, 'enc': self.encodes})
-#         df.to_csv(self.facecsv, index=False)
-#         return True
     
     def _save(self):
         if self.labels is None or self.encodes is None or self.facecsv is None:
@@ -55,8 +42,11 @@ class Faces():
     
     def _encode(self, p):
         img = face_recognition.load_image_file(p)
-        enc = face_recognition.face_encodings(img)[0] #回傳值被 list 包住
-        lab = path.basename(p).split('.')[0] #取檔名當作 label
+        fe = face_recognition.face_encodings(img)
+        if not fe:  # no face detected
+            return None, None
+        enc = face_recognition.face_encodings(img)[0]  # 回傳值被 list 包住
+        lab = path.basename(p).split('.')[0]  # 取檔名當作 label
         return list(enc), lab
     
     def delete(self, label):
@@ -71,14 +61,49 @@ class Faces():
             
         return 0
     
+    # update face csv via single image input (numpy array) with label
+    def update_image(self, image, label):  # image in numnpy array and label in string
+        if self._load() < 0:  # face csv 不存在
+            return self.generate_image(image, label)
+        fe = face_recognition.face_encodings(image)
+        if not fe:
+            return -1
+        enc = list(fe[0])  # returned is wrapped by list
+        for i, v in enumerate(self.labels):
+            if label == v:  # 更新一筆
+                self.encodes[i] = enc
+                return int(self._save())
+        self.encodes.append(enc)
+        self.labels.append(label)
+        
+        return int(self._save())
+    
+    # generate new face csv via single image input (numpy array) with label
+    def generate_image(self, image, label):
+        self.labels = []
+        self.encodes = []
+        fe = face_recognition.face_encodings(image)
+        if not fe:
+            return -1
+        enc = list(fe[0])  # returned is wrapped by list
+        self.encodes.append(enc)  # 轉成 list 才會有逗點，之後才能被叫用
+        self.labels.append(label)
+
+        if len(self.labels) == 0:
+            return 0
+        
+        return len(self.labels) if self._save() else 0  # 儲存模型
+    
     def update(self, p):
-        if path.isfile(p): #更新單個檔
+        if path.isfile(p):  # 更新單個檔
             if self._load() < 0:
                 return self.generate(p)
             
             enc, lab = self._encode(p)
+            if not enc:
+                return -1
             for i, v in enumerate(self.labels):
-                if lab == v: #更新一筆
+                if lab == v:  # 更新一筆
                     self.encodes[i] = enc
                     return int(self._save())
             #新增一筆
@@ -94,6 +119,8 @@ class Faces():
             count = 0
             for s in samples:
                 enc, lab = self._encode(s)
+                if not enc:
+                    continue
                 updated = False
                 for i, v in enumerate(self.labels):
                     if lab == v: #更新一筆
@@ -115,7 +142,7 @@ class Faces():
         if path.isfile(p):
             samples = [p]
         elif path.isdir(p):
-            samples = glob(path.join(p, '*.jpg')) # 準備檔案清單
+            samples = glob(path.join(p, '*.jpg'))  # 準備檔案清單
         else:
             return 0
         
@@ -124,13 +151,15 @@ class Faces():
         self.encodes = []
         for s in samples:
             enc, lab = self._encode(s)
-            self.encodes.append(enc) #轉成 list 才會有逗點，之後才能被叫用
+            if not enc:
+                continue
+            self.encodes.append(enc)  # 轉成 list 才會有逗點，之後才能被叫用
             self.labels.append(lab)
 
         if len(self.labels) == 0:
             return 0
         
-        return len(self.labels) if self._save() else 0 # 儲存模型
+        return len(self.labels) if self._save() else 0  # 儲存模型
 
 
 # In[1]:
@@ -176,9 +205,6 @@ if __name__ == '__main__':
     if args.deletelabel is not None:
         c = faces.delete(args.deletelabel)
         print(f'{c} face deleted for {time()-start:.3f} secs')
-
-
-# In[ ]:
 
 
 
