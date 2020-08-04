@@ -72,6 +72,8 @@ def pic():
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--encoding', type=str, default='face.csv', help='face encoding in csv')
 parser.add_argument('-r', '--resize', type=int, default=320, help='downscale the pic width to save detection time')
+parser.add_argument('-c', '--cam', action='store_true', help='change CAM')
+
 # avoid jupyter notebook exception
 if argv[0][-21:] == 'ipykernel_launcher.py':
     args = parser.parse_args(args=[])
@@ -89,7 +91,7 @@ faces = Faces(args.encoding)  # for face encoding generation
 if platform.machine() == 'aarch64':  # Jetson Nano
     cam = cv2.VideoCapture(get_jetson_gstreamer_source(), cv2.CAP_GSTREAMER)
 else:
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(int(args.cam))
     
 cam_w = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))  # float
 cam_h = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))  # float

@@ -31,9 +31,6 @@ class FaceCam():
         self.labels = None
         self.encodes = None
         self._load(csv)
-#         face_df = pd.read_csv(csv)
-#         self.labels = face_df['name'].values.tolist()
-#         self.encodes = pd.eval(face_df['enc'])
         self.width = width
         self.threshold = threshold
         self.font=font
@@ -74,11 +71,11 @@ class FaceCam():
             return img
         return image
     
-    def run(self, interval=40):
+    def run(self, interval=40, reverse_cam=False):
         if platform.machine() == 'aarch64': # Jetson Nano
             cam = cv2.VideoCapture(get_jetson_gstreamer_source(), cv2.CAP_GSTREAMER)
         else:
-            cam = cv2.VideoCapture(0) # Windows 10 & Raspberry Pi 3B+ 
+            cam = cv2.VideoCapture(int(reverse_cam)) # Windows 10 & Raspberry Pi 3B+ 
             if self.width > 0: # downscale to save time for detection, but the size wont be same with assigned
                 cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         cam_w = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH)) # float
@@ -142,6 +139,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--distance', type=float, default=0.5, help='threshold for recognition face distance')
     parser.add_argument('-i', '--interval', type=int, default=40, help='frame capture interval in ms')
     parser.add_argument('-f', '--font', type=str, help='font in ttf, ttc or otf')
+    parser.add_argument('-c', '--cam', action='store_true', help='change CAM')
     
     # 避掉 jupyter notebook exception
     if argv[0][-21:] == 'ipykernel_launcher.py':
@@ -155,7 +153,7 @@ if __name__ == '__main__':
     if not path.isfile(args.encoding):
         print(f'{args.encoding} not existed!')
     elif args.pic is None:
-        FaceCam(args.encoding, args.resize, args.distance, font).run(args.interval)
+        FaceCam(args.encoding, args.resize, args.distance, font).run(args.interval, args.cam)
     elif path.isfile(args.pic):
         if args.textonly:
             start = time()
@@ -164,10 +162,4 @@ if __name__ == '__main__':
             print(f'elapsed {time()-start:.3f} secs')
     else:
         print(f'{args.pic} not existed!')
-
-
-# In[ ]:
-
-
-
 
