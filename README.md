@@ -25,6 +25,15 @@ to recognize the face by cam (realtime) or picture (batch)
 3. if camera on Windows or Pi Camera is installed on Jetson Nano/ Raspberry Pi, you may run realtime face recognition by command "python3 facecam.py"
 4. "python3 facecam.py --help" to get usage
 
+### rollcall_edge.py
+
+to roll call based on face recognition
+
+1. start the application by command "python3 rollcall_edge.py -m mqtt_ip_address"
+2. push "註冊" for newly added user
+3. push "點名" for roll call
+4. "python3 rollcall_edge.py --help" to get usage
+
 ##### platforms
 
 Microsoft Windows 10/ NVIDIA Jetson Nano/ Raspberry Pi 3B+
