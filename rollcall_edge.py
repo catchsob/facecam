@@ -11,7 +11,7 @@ from tkinter import Tk, Label, Button
 from tkinter.messagebox import showinfo, showwarning
 from tkinter.simpledialog import askstring
 from PIL import Image, ImageTk, ImageFont, ImageDraw
-from time import time
+from time import time, localtime, strftime
 import cv2
 from facegen import Faces
 from sys import argv
@@ -79,7 +79,8 @@ def video_loop():
         panel.config(image=imgtk)
         if n_len > 0:
             rollcall_flg = False
-            mqtt_pub('rollcall/signin', ns)
+            if mqtt_flg:
+                mqtt_pub('rollcall/signin', ns)
             video_flg = False
             showinfo('sign in', f'{ns} sign in successfully.')
             video_flg = True
@@ -100,7 +101,8 @@ def register():
         rtn = faces.update_image(picture, n)
         if rtn > 0:
             showinfo('rollcall labeling', f'Register {n} successfully.')
-            mqtt_pub('rollcall/register', n)
+            if mqtt_flg:
+                mqtt_pub('rollcall/register', n)
         else:
             showwarning('rollcall labeling', f'Failed to register {n}!')
     video_flg = True
@@ -133,11 +135,13 @@ def rollcall():
 
 def mqtt_pub(topic, msg):
     if type(msg) is str:
-        publish.single(topic, msg, hostname=ip)
+        mm = f'{msg}|{strftime("%Y/%m/%d-%H:%M:%S", localtime())}'
+        publish.single(topic, mm, hostname=ip)
     else:
         payload = []
         for m in msg:
-            payload.append((topic, m, 0, False))
+            mm = f'{m}|{strftime("%Y/%m/%d-%H:%M:%S", localtime())}'
+            payload.append((topic, mm, 0, False))
         publish.multiple(payload, hostname=ip)
 
 
@@ -150,7 +154,7 @@ parser.add_argument('-c', '--cam', action='store_true', help='change CAM')
 parser.add_argument('-d', '--distance', type=float, default=0.5, help='threshold for recognition face distance')
 parser.add_argument('-e', '--encoding', type=str, default='face.csv', help='face encoding in csv')
 parser.add_argument('-f', '--font', type=str, help='font in ttf, ttc or otf')
-parser.add_argument('-m', '--mqtt_broker', type=str, default='localhost', help='IP address of MQTT broker')
+parser.add_argument('-m', '--mqtt_broker', type=str, help='IP address of MQTT broker')  # None means no MQTT transmission
 parser.add_argument('-r', '--resize', type=int, default=320, help='downscale the pic width to save detection time')
 
 # avoid jupyter notebook exception
@@ -173,6 +177,7 @@ font = args.font
 if font is None:  # decide the default font for varient platforms
     font = 'NotoSansCJK-Regular.ttc' if platform.machine() == 'aarch64' else 'kaiu.ttf'  # Jetson Nano vs Windows
 ip = args.mqtt_broker
+mqtt_flg = ip is not None
 
 # cam design
 if platform.machine() == 'aarch64':  # Jetson Nano
