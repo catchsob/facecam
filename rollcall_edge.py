@@ -3,7 +3,7 @@
 
 # # Roll Call Edge
 
-# In[32]:
+# In[21]:
 
 
 import tkinter as tk
@@ -22,7 +22,7 @@ import numpy as np
 import paho.mqtt.publish as publish
 
 
-# In[33]:
+# In[22]:
 
 
 def get_jetson_gstreamer_source(capture_width=1280, capture_height=720, display_width=1280, display_height=720, framerate=60, flip_method=0):
@@ -57,7 +57,7 @@ def video_loop():
             picture = downscale(picture) 
         n_len = -1
         if rollcall_flg:
-            if time()-rollcall_start > 5.:  # check for 5 seconds
+            if faces.is_none() or time()-rollcall_start > 5.:  # check for 5 seconds
                 rollcall_flg = False
                 window.title(name)
             else:  # face recognition
@@ -114,11 +114,11 @@ def detect(face):
     ens_len = len(ens)  # get faces count
     ret = []
     if ens_len > 0:
-        locs = face_recognition.face_locations(face)  #取得臉部框
+        locs = face_recognition.face_locations(face)  # get the face frame
         if ens_len is not len(locs):
             print(f'something wrong!!! {ens_len} != {len(locs)}')
-        for e in range(ens_len): #針對每個擷取到的臉進行判讀
-            distance = face_recognition.face_distance(faces.encodes, ens[e]) #計算影像與每張臉的距離
+        for e in range(ens_len):  # judge each got face
+            distance = face_recognition.face_distance(faces.encodes, ens[e])  # compute the distance with each face
             (top, right, bottom, left) = locs[e]
             facei = distance.argmin()  # decide the most likly face
             name = faces.labels[facei] if distance[facei] < threshold else '不認識'
@@ -145,7 +145,7 @@ def mqtt_pub(topic, msg):
         publish.multiple(payload, hostname=ip)
 
 
-# In[34]:
+# In[23]:
 
 
 # parser design
@@ -204,10 +204,4 @@ video_loop()
 window.mainloop()
 cam.release()
 cv2.destroyAllWindows()
-
-
-# In[ ]:
-
-
-
 

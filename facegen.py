@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[53]:
+# In[1]:
 
 
 import face_recognition
@@ -31,7 +31,7 @@ class Faces():
         return 0 if not self.labels else len(self.labels)
     
     def _save(self):
-        if self.labels is None or self.encodes is None or self.facecsv is None:
+        if self._is_none():
             return False
         with open(self.facecsv, 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
@@ -48,6 +48,12 @@ class Faces():
         enc = face_recognition.face_encodings(img)[0]  # 回傳值被 list 包住
         lab = path.basename(p).split('.')[0]  # 取檔名當作 label
         return list(enc), lab
+    
+    def _is_none(self):
+        return self.labels is None or self.encodes is None or self.facecsv is None
+    
+    def is_none(self):
+        return self._is_none()
     
     def delete(self, label):
         if self._load() <= 0:
@@ -162,7 +168,7 @@ class Faces():
         return len(self.labels) if self._save() else 0  # 儲存模型
 
 
-# In[1]:
+# In[2]:
 
 
 import argparse
@@ -205,6 +211,9 @@ if __name__ == '__main__':
     if args.deletelabel is not None:
         c = faces.delete(args.deletelabel)
         print(f'{c} face deleted for {time()-start:.3f} secs')
+
+
+# In[ ]:
 
 
 
