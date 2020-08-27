@@ -30,8 +30,8 @@ to recognize the face by cam (realtime) or picture (batch)
 to roll call based on face recognition
 
 1. start the application by command "python3 rollcall_edge.py -m mqtt_ip_address"
-2. push "註冊" for newly added user
-3. push "點名" for roll call
+2. button to "註冊" register for a new user
+3. button to "點名" sign-in for an existing user
 4. "python3 rollcall_edge.py --help" to get usage
 
 ##### platforms
@@ -40,7 +40,7 @@ Microsoft Windows 10/ NVIDIA Jetson Nano/ Raspberry Pi 3B+
 
 ##### dependencies
 
-dlib, pillow, opencv (facecam, faceme), numpy, face_recognition, python3-tk (faceme)
+dlib, pillow, opencv (facecam, faceme, rollcall_edge), numpy, face_recognition, python3-tk (faceme, rollcall_edge), paho-mqtt (rollcall_edge)
 
 ##### notes
 
