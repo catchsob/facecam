@@ -4,6 +4,7 @@ A face recognition suite on variant platform
 ### fagen.py
 
 to generate a face encoding csv file
+
 1. prepare jpg face image files with labeled file name (such as chou.jpg, wang.jpg, ... etc) in specific directory (such as train)
 2. generate the face encoding file by command "python3 facegen.py -p train"
 3. "python3 facegen.py --help" to get usage
