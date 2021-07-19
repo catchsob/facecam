@@ -151,11 +151,15 @@ def mqtt_pub(topic, msg):
 # parser design
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--cam', action='store_true', help='change CAM')
-parser.add_argument('-d', '--distance', type=float, default=0.5, help='threshold for recognition face distance')
+parser.add_argument('-d', '--distance', type=float, default=0.5,
+                    help='threshold for recognition face distance')
 parser.add_argument('-e', '--encoding', type=str, default='face.csv', help='face encoding in csv')
-parser.add_argument('-f', '--font', type=str, help='font in ttf, ttc or otf')
-parser.add_argument('-m', '--mqtt_broker', type=str, help='IP address of MQTT broker')  # None means no MQTT transmission
-parser.add_argument('-r', '--resize', type=int, default=320, help='downscale the pic width to save detection time')
+parser.add_argument('-f', '--font', type=str, default='TaipeiSansTCBeta-Regular.ttf',
+                    help='font in ttf, ttc or otf')
+parser.add_argument('-m', '--mqtt_broker', type=str,
+                    help='IP address of MQTT broker')  # None means no MQTT transmission
+parser.add_argument('-r', '--resize', type=int, default=320,
+                    help='downscale the pic width to save detection time')
 
 # avoid jupyter notebook exception
 if argv[0][-21:] == 'ipykernel_launcher.py':
@@ -174,8 +178,8 @@ rollcall_start = None
 faces = Faces(args.encoding)  # for face encoding generation
 threshold = args.distance
 font = args.font
-if font is None:  # decide the default font for varient platforms
-    font = 'NotoSansCJK-Regular.ttc' if platform.machine() == 'aarch64' else 'kaiu.ttf'  # Jetson Nano vs Windows
+#if font is None:
+#    font = 'NotoSansCJK-Regular.ttc' if platform.machine() == 'aarch64' else 'kaiu.ttf'  # Jetson Nano vs Windows
 ip = args.mqtt_broker
 mqtt_flg = ip is not None
 
