@@ -185,7 +185,10 @@ mqtt_flg = ip is not None
 
 # cam design
 if platform.machine() == 'aarch64':  # Jetson Nano
-    cam = cv2.VideoCapture(get_jetson_gstreamer_source(), cv2.CAP_GSTREAMER)
+    if args.cam:
+        cam = cv2.VideoCapture(0)  # USB Webcam
+    else:
+        cam = cv2.VideoCapture(get_jetson_gstreamer_source(), cv2.CAP_GSTREAMER)  # CSI2 Cam
 else:
     cam = cv2.VideoCapture(int(args.cam))
     
