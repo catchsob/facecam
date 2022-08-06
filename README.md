@@ -45,4 +45,4 @@ dlib, pillow, opencv (facecam, faceme, rollcall_edge), numpy, face_recognition, 
 
 ##### notes
 
-TaipeiSansTCBeta-Regular.ttf is an open true type font in Chinese from https://sites.google.com/view/jtfoundry/en for running the code on Respberry Pi. You should adopt it by "-f TaipeiSansTCBeta-Regular.ttf" once your label is in Chinese and command "python3 facecam.py".
+You should download and specify Chinese font (such as TaipeiSansTCBeta-Regular.ttf from https://sites.google.com/view/jtfoundry/en) especially on Respberry Pi. "-f YOUR_CHINESEFONT.ttf" in facecam.py or rollcall_edge is suggested.
