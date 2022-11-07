@@ -43,6 +43,15 @@ Microsoft Windows 10/ NVIDIA Jetson Nano/ Raspberry Pi 3B+
 
 dlib, pillow, opencv (facecam, faceme, rollcall_edge), numpy, face_recognition, python3-tk (faceme, rollcall_edge), paho-mqtt (rollcall_edge)
 
+##### installation process on Windows 10
+
+1. install CMake
+2. install Visual Studio Community with both MSVC v14x and Windows 10 SDK checked within Desktop development with C++
+3. pip install dlib
+4. pip install face_recognition
+5. get all codes in this project
+6. get TaipeiSansTCBeta-Regular.ttf
+
 ##### notes
 
 You should download and specify Chinese font (such as TaipeiSansTCBeta-Regular.ttf from https://sites.google.com/view/jtfoundry/en) especially on Respberry Pi. "-f YOUR_CHINESEFONT.ttf" in facecam.py or rollcall_edge is suggested.
