@@ -47,10 +47,9 @@ dlib, pillow, opencv (facecam, faceme, rollcall_edge), numpy, face_recognition, 
 
 1. install CMake
 2. install Visual Studio Community with both MSVC v14x and Windows 10 SDK (or Windows 11 SDK) checked within Desktop development with C++
-3. pip install dlib
-4. pip install face_recognition paho-mqtt
-5. get all codes in this project
-6. get TaipeiSansTCBeta-Regular.ttf
+3. pip install dlib face_recognition paho-mqtt opencv-python
+4. get all codes in this project
+5. get TaipeiSansTCBeta-Regular.ttf
 
 ##### notes
 
