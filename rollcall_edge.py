@@ -160,6 +160,8 @@ parser.add_argument('-m', '--mqtt_broker', type=str,
                     help='IP address of MQTT broker')  # None means no MQTT transmission
 parser.add_argument('-r', '--resize', type=int, default=320,
                     help='downscale the pic width to save detection time')
+parser.add_argument('-b', '--backend', default='MSMF', choices=['MSMF', 'DirectShow', 'FFmpeg'],
+                    help='backend of grabbing frame in non-Jetson, default MSMF')
 
 # avoid jupyter notebook exception
 if argv[0][-21:] == 'ipykernel_launcher.py':
@@ -190,7 +192,12 @@ if platform.machine() == 'aarch64':  # Jetson Nano
     else:
         cam = cv2.VideoCapture(get_jetson_gstreamer_source(), cv2.CAP_GSTREAMER)  # CSI2 Cam
 else:
-    cam = cv2.VideoCapture(int(args.cam))
+    if args.backend == 'MSMF':
+        cam = cv2.VideoCapture(int(args.cam))
+    elif args.backend == 'DirectShow':
+        cam = cv2.VideoCapture(int(args.cam), cv2.CAP_DSHOW)
+    else:
+        cam = cv2.VideoCapture(int(args.cam), cv2.CAP_FFMPEG)
     
 cam_w = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))  # in float
 cam_h = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))  # in float
